@@ -6,3 +6,6 @@ tk
 
 # Visualization
 matplotlib
+
+#Music Library
+music21
