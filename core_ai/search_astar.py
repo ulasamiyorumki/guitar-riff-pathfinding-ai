@@ -1,4 +1,5 @@
-from core_ai.models import Problem
+import heapq
+from core_ai.models import Problem, Node
 from core_ai.note_mapping import NoteMapper
 from core_ai.cost import ErgonomicCost
 
@@ -14,7 +15,7 @@ class GuitarPathProblem(Problem):
         self.cost_calculator = ErgonomicCost()
         self.riff_notes = riff_notes
 
-        # Initial state: Using index -1 to represent the start before the first note
+        # Initial state: Using index -1 to represent the start position before the first note
         initial_state = (0, 0, -1)
         super().__init__(initial_state)
 
@@ -34,7 +35,7 @@ class GuitarPathProblem(Problem):
 
         # CSP Pruning:
         # If it's the first note (note_index == -1), all positions are valid.
-        # Otherwise, check physical possibility from the current position.
+        # Otherwise, check physical possibility from the current hand position.
         if note_index == -1:
             return [(s, f, next_index) for s, f in all_possible_next_pos]
 
@@ -73,6 +74,35 @@ class GuitarPathProblem(Problem):
 
     def h(self, node):
         """
-        Admissible Heuristic: Number of notes remaining to be played.
+        Admissible Heuristic: Estimates remaining cost based on notes left to play.
         """
         return len(self.riff_notes) - 1 - node.state[2]
+
+def astar_search(problem):
+    """
+    Standard A* Search Algorithm implementation.
+    f(n) = g(n) + h(n)
+    """
+    node = Node(problem.initial)
+    frontier = []
+
+    # Priority queue stores (priority, node)
+    # priority = cumulative_cost + heuristic_estimate
+    heapq.heappush(frontier, (0 + problem.h(node), node))
+
+    explored = set()
+
+    while frontier:
+        _, node = heapq.heappop(frontier)
+
+        if problem.goal_test(node.state):
+            return node.path()
+
+        explored.add(node.state)
+
+        for child in node.expand(problem):
+            if child.state not in explored:
+                f_value = child.path_cost + problem.h(child)
+                heapq.heappush(frontier, (f_value, child))
+
+    return None
