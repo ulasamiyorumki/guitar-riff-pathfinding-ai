@@ -2,16 +2,16 @@ import tkinter as tk
 
 
 class FretboardView:
-    def __init__(self, parent):
+    def __init__(self, parent,fretboard):
         # Canvas initialization with dark background
         self.canvas = tk.Canvas(parent, bg="#121212", highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         # Configuration
-        self.strings = 6
-        self.frets = 22
-        # Standard Tablature View: String 1 (High E) at the top, String 6 (Low E) at the bottom
-        self.string_order = [1, 2, 3, 4, 5, 6]
+        self.fretboard = fretboard
+        self.strings = fretboard.num_strings
+        self.frets = fretboard.num_frets
+        self.string_order = list(range(1,self.strings+1))
 
         self.margin_x = 60
         self.margin_y = 50

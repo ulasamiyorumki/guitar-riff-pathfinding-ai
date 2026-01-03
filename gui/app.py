@@ -2,16 +2,18 @@ import tkinter as tk
 from gui.input_panel import InputPanel
 from gui.fretboard_view import FretboardView
 from core_ai.api import run_fingering_algorithm
+from core_ai.fretboard import Fretboard
 
 
 class GuitarAIApp:
     def __init__(self, root):
+        self.fretboard_model = Fretboard()
         self.root = root
         self.root.title("Guitar AI Pathfinding Dashboard")
         self.root.geometry("1200x650")
         self.root.configure(bg="#121212")
 
-        self.fretboard = FretboardView(self.root)
+        self.fretboard = FretboardView(self.root, self.fretboard_model)
         self.input_panel = InputPanel(
             self.root,
             self.on_solve,
