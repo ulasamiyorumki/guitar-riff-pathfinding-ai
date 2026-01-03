@@ -1,7 +1,3 @@
-Here is a concise and professional **README.md** for your GitHub repository. It focuses on the AI search and optimization aspects, which align perfectly with your course requirements.
-
----
-
 # 🎸 Guitar AI Pathfinding Dashboard
 
 An intelligent agent that finds the most ergonomic fretboard positions for any given musical riff. This project uses **Global Optimization (Dynamic Programming)** to minimize the physical effort (stretch and string jumps) for a guitar player.
@@ -42,7 +38,3 @@ The app provides real-time feedback on:
 
 * `/core_ai`: The "brain" containing the optimization algorithms and note mapping.
 * `/gui`: The Tkinter-based visual lab for fretboard and path visualization.
-
----
-
-Would you like me to help you draft the **Project Paper** introduction or the **Contribution Summary** next?
