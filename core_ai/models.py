@@ -1,5 +1,3 @@
-import math
-
 class Problem:
     """The abstract class for a formal problem. You should subclass
     this and implement the methods actions and result, and possibly

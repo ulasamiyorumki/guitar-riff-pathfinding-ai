@@ -101,6 +101,9 @@ class FretboardView:
         for step, (s_num, fret) in enumerate(self.full_path[:step_count], 1):
             row_index = self.string_order.index(s_num)
 
+            if not self.fretboard.is_valid_position(s_num, fret):
+                continue
+
             # Calculate X (Handle open strings at fret 0)
             if fret == 0:
                 base_x = self.margin_x - 15

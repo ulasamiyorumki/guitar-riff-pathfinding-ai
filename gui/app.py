@@ -1,4 +1,3 @@
-import tkinter as tk
 from gui.input_panel import InputPanel
 from gui.fretboard_view import FretboardView
 from core_ai.api import run_fingering_algorithm
