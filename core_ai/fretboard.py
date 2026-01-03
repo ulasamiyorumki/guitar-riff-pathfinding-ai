@@ -21,3 +21,6 @@ class Fretboard:
     def get_fretboard_size(self):
         """Returns the dimensions of the search grid."""
         return self.num_strings, self.num_frets
+
+
+
