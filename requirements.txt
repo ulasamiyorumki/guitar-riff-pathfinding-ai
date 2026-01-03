@@ -1,5 +1,6 @@
 # Core
 numpy
+itertools
 
 # GUI
 tk
@@ -12,3 +13,4 @@ music21
 
 #Canvas library
 pillow
+

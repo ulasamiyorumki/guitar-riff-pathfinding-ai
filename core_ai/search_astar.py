@@ -1,4 +1,5 @@
 import heapq
+import itertools
 from core_ai.models import Problem, Node
 from core_ai.note_mapping import NoteMapper
 from core_ai.cost import ErgonomicCost
@@ -6,7 +7,7 @@ from core_ai.cost import ErgonomicCost
 
 class GuitarPathProblem(Problem):
     """
-    Solves the guitar pathfinding task using indexed states for progress tracking.
+    Solves the guitar pathfinding task using A* with optimality guarantees.
     State format: (string, fret, note_index)
     """
 
@@ -15,14 +16,11 @@ class GuitarPathProblem(Problem):
         self.cost_calculator = ErgonomicCost()
         self.riff_notes = riff_notes
 
-        # Initial state: Using index -1 to represent the start position before the first note
+        # Dummy initial state (before first note)
         initial_state = (0, 0, -1)
         super().__init__(initial_state)
 
     def actions(self, state):
-        """
-        Returns possible positions for the NEXT note in the sequence.
-        """
         string, fret, note_index = state
         next_index = note_index + 1
 
@@ -31,78 +29,73 @@ class GuitarPathProblem(Problem):
 
         next_note = self.riff_notes[next_index]
         midi_val = self.mapper.note_to_midi(next_note)
-        all_possible_next_pos = self.mapper.find_positions_on_fretboard(midi_val)
 
-        # CSP Pruning:
-        # If it's the first note (note_index == -1), all positions are valid.
-        # Otherwise, check physical possibility from the current hand position.
-        if note_index == -1:
-            return [(s, f, next_index) for s, f in all_possible_next_pos]
+        if midi_val is None:
+            return []
 
-        valid_actions = []
-        for s_next, f_next in all_possible_next_pos:
-            if self.cost_calculator.is_physically_possible((string, fret), (s_next, f_next)):
-                valid_actions.append((s_next, f_next, next_index))
-
-        return valid_actions
+        positions = self.mapper.find_positions_on_fretboard(midi_val)
+        return [(s, f, next_index) for s, f in positions]
 
     def result(self, state, action):
-        """
-        The action itself is the next state (string, fret, next_index).
-        """
         return action
 
     def goal_test(self, state):
-        """
-        Goal is reached when the note_index matches the last note of the riff.
-        """
         return state[2] == len(self.riff_notes) - 1
 
     def path_cost(self, c, state1, action, state2):
-        """
-        Calculates g(n) using the ergonomic cost between coordinates.
-        """
-        # If moving from the starting dummy state, cost is 0
+        # Small base cost for first note (instead of free teleport)
         if state1[2] == -1:
-            return 0
+            return c + 1.0
 
-        # Extract coordinates only for cost calculation
         pos1 = (state1[0], state1[1])
         pos2 = (state2[0], state2[1])
 
-        return c + self.cost_calculator.calculate_step_cost(pos1, pos2)
+        step_cost = self.cost_calculator.calculate_step_cost(pos1, pos2)
+
+        # Soft anatomical constraint
+        if not self.cost_calculator.is_physically_possible(pos1, pos2):
+            step_cost += 15.0
+
+        return c + step_cost
 
     def h(self, node):
         """
-        Admissible Heuristic: Estimates remaining cost based on notes left to play.
+        Admissible heuristic:
+        Minimum possible cost assuming best-case movement.
         """
-        return len(self.riff_notes) - 1 - node.state[2]
+        remaining_notes = len(self.riff_notes) - 1 - node.state[2]
+        MIN_STEP_COST = 1.0
+        return remaining_notes * MIN_STEP_COST
+
 
 def astar_search(problem):
     """
-    Standard A* Search Algorithm implementation.
-    f(n) = g(n) + h(n)
+    Correct A* implementation with dominance checks.
     """
-    node = Node(problem.initial)
+
+    start = Node(problem.initial)
+
+    counter = itertools.count()
     frontier = []
+    heapq.heappush(frontier, (problem.h(start), next(counter), start))
 
-    # Priority queue stores (priority, node)
-    # priority = cumulative_cost + heuristic_estimate
-    heapq.heappush(frontier, (0 + problem.h(node), node))
-
-    explored = set()
+    # Best known g(n) for each state
+    best_g = {start.state: 0}
 
     while frontier:
-        _, node = heapq.heappop(frontier)
+        _, _, node = heapq.heappop(frontier)
 
         if problem.goal_test(node.state):
             return node.path()
 
-        explored.add(node.state)
-
         for child in node.expand(problem):
-            if child.state not in explored:
-                f_value = child.path_cost + problem.h(child)
-                heapq.heappush(frontier, (f_value, child))
+            s = child.state
+            g = child.path_cost
+
+            # Dominance check (KEY FIX)
+            if s not in best_g or g < best_g[s]:
+                best_g[s] = g
+                f = g + problem.h(child)
+                heapq.heappush(frontier, (f, next(counter), child))
 
     return None

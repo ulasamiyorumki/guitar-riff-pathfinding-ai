@@ -37,8 +37,7 @@ class InputPanel:
                      "font": ("Arial", 12, "bold"), "padx": 20, "pady": 10}
 
         tk.Button(self.ctrl_row, text="PREV", command=prev_cb, **btn_style).pack(side=tk.LEFT, padx=5)
-        tk.Button(self.ctrl_row, text="NEXT", command=next_cb, **btn_opt if 'btn_opt' in locals() else btn_style).pack(
-            side=tk.LEFT, padx=5)
+        tk.Button(self.ctrl_row, text="NEXT", command=next_cb, **btn_style).pack(side=tk.LEFT, padx=5)
 
         tk.Button(self.ctrl_row, text="SHOW FULL PATH", command=full_cb,
                   bg="#ff0077", fg="black", font=("Arial", 12, "bold"),
@@ -59,8 +58,8 @@ class InputPanel:
         stats_config = [
             ("Stretch Cost", "stretch"),
             ("String Shift", "string"),
-            ("Position Shift", "pos"),
-            ("TOTAL SCORE", "total")
+            ("Penalty Count (+15)", "penalty_count"),
+            ("TOTAL COST (A*)", "total")
         ]
 
         for label_text, key in stats_config:
