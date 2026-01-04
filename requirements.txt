@@ -9,7 +9,11 @@ matplotlib
 
 #Music Library
 music21
+simpleaudio
+sounddevice
 
 #Canvas library
 pillow
+
+
 

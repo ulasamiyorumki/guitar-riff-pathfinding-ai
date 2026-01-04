@@ -41,6 +41,8 @@ class NoteMapper:
                 positions.append((string_num, fret))
         return positions
 
+    def midi_to_note_name(self, midi):
+        return note.Note(midi).nameWithOctave
 # Example Usage:
 # mapper = NoteMapper()
 # midi_val = mapper.note_to_midi("A3")

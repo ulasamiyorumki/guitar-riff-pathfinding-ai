@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 class InputPanel:
-    def __init__(self, parent, solve_cb, next_cb, prev_cb, full_cb):
+    def __init__(self, parent, solve_cb, next_cb, prev_cb, full_cb, play_cb):
         # Main container with increased padding
         self.frame = tk.Frame(parent, bg="#1e1e1e", padx=30, pady=20)
         self.frame.pack(fill=tk.X)
@@ -42,6 +42,18 @@ class InputPanel:
         tk.Button(self.ctrl_row, text="SHOW FULL PATH", command=full_cb,
                   bg="#ff0077", fg="black", font=("Arial", 12, "bold"),
                   padx=25, pady=10, relief=tk.FLAT).pack(side=tk.LEFT, padx=30)
+
+        tk.Button(
+            self.ctrl_row,
+            text="▶ PLAY",
+            command=play_cb,
+            bg="#1abc9c",
+            fg="black",
+            font=("Arial", 12, "bold"),
+            padx=25,
+            pady=10,
+            relief=tk.FLAT
+        ).pack(side=tk.LEFT, padx=10)
 
         # Status Message area
         self.log_label = tk.Label(self.left_side, text="Ready", fg="#888", bg="#1e1e1e",
