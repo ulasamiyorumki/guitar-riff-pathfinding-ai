@@ -1,6 +1,7 @@
 from core_ai.search_astar import astar_search, GuitarPathProblem
 from core_ai.cost import ErgonomicCost
-
+import pandas as pd
+import random
 
 def run_fingering_algorithm(riff):
     """
@@ -64,3 +65,23 @@ def calculate_final_metrics(path, evaluator: ErgonomicCost):
         "penalty_count": penalty_count,
         "total": round(total_cost, 2)
     }
+
+def generate_random_riff_from_excel():
+    """
+    Selects 10 random notes from column B (rows 2-48) of guitar_midi_notes.xlsx.
+    """
+    try:
+        # Load the Excel file focusing on the specific range
+        df = pd.read_excel("guitar_midi_notes.xlsx", usecols=[1], skiprows=1, nrows=47, header=None,engine="openpyxl")
+
+        # Convert the column data to a list and filter out empty values
+        all_notes = df.iloc[:, 0].dropna().tolist()
+
+        # Pick 10 random samples from the list
+        selected_notes = random.sample(all_notes, 10)
+
+        return " ".join(map(str, selected_notes))
+    except Exception as e:
+        print(f"Excel Reading Error: {e}")
+        # Fallback riff in case of file issues
+        return "E2 G2 B2 D3 G3 B3 E4 D4 B3 G3"

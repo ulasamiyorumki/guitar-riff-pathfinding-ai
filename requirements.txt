@@ -15,5 +15,10 @@ sounddevice
 #Canvas library
 pillow
 
+#Pandas
+pandas
+
+#openpyxl
+openpyxl
 
 

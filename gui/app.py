@@ -4,14 +4,14 @@ from core_ai.api import run_fingering_algorithm
 from core_ai.fretboard import Fretboard
 from audio.player import GuitarSoundPlayer
 from core_ai.note_mapping import NoteMapper
-
+import tkinter as tk
 
 class GuitarAIApp:
     def __init__(self, root):
         self.fretboard_model = Fretboard()
         self.root = root
         self.root.title("Guitar AI Pathfinding Dashboard")
-        self.root.geometry("1200x650")
+        self.root.geometry("1366x768")
         self.root.configure(bg="#121212")
         self.sound_player = GuitarSoundPlayer()
         self.note_mapper = NoteMapper()
@@ -28,6 +28,14 @@ class GuitarAIApp:
         )
 
     def on_solve(self, riff_text):
+
+        if riff_text == "RANDOM_GENERATE":
+            from core_ai.api import generate_random_riff_from_excel
+            riff_text = generate_random_riff_from_excel()
+
+            self.input_panel.riff_entry.delete(0, tk.END)
+            self.input_panel.riff_entry.insert(0, riff_text)
+
         riff = riff_text.strip().split()
         if not riff:
             self.fretboard.load_path([])
